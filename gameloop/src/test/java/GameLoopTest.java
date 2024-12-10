@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Arrays;
 
-
+import org.junit.Before;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -15,6 +15,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class GameLoopTest {
+
+	private TestGame testGame;
+	private GameLoop uut;
 
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
@@ -25,7 +28,9 @@ class GameLoopTest {
 	}
 
 	@BeforeEach
-	void setUp() throws Exception {
+	public void setUpGameLoop() throws Exception {
+		testGame = new TestGame();
+		uut = new GameLoop(testGame);
 	}
 
 	@AfterEach
@@ -34,33 +39,22 @@ class GameLoopTest {
 
 	@Test
 	void doesNothingIfGameIsNotRunning() {
-		TestGame testGame = new TestGame();
-		GameLoop uut = new GameLoop(testGame);
 		testGame.setRunning(false);
 		uut.run();
-
 		assertFalse(testGame.isUpdated); 
 	}
 
 	@Test
 	void invokesOneUpdateIfGameIsRunning() {
-		TestGame testGame = new TestGame();
 		testGame.setRunning(true,false);
-		GameLoop uut = new GameLoop(testGame);
-
 		uut.run();
-
 		assertTrue(testGame.isUpdated);
 	}
 	
 	@Test
 	void invokesUpdateAsLongAsGameIsRunnig() {
-		TestGame testGame = new TestGame();
 		testGame.setRunning(true, true, true, false);
-		GameLoop uut = new GameLoop(testGame);
-
 		uut.run();
-		
 		assertThat(testGame.numberOfUpdates, is(3));
 	}
 
