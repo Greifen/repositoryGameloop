@@ -1,4 +1,12 @@
 import static org.junit.jupiter.api.Assertions.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+import java.util.Arrays;
+
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -28,38 +36,52 @@ class GameLoopTest {
 	void doesNothingIfGameIsNotRunning() {
 		TestGame testGame = new TestGame();
 		GameLoop uut = new GameLoop(testGame);
+		testGame.setRunning(false);
 		uut.run();
 
-		assertFalse(testGame.isUpdated);
+		assertFalse(testGame.isUpdated); 
 	}
 
 	@Test
-	void invokeOneUpdateIfGameIsRunning() {
+	void invokesOneUpdateIfGameIsRunning() {
 		TestGame testGame = new TestGame();
-		testGame.setRunning(true);
+		testGame.setRunning(true,false);
 		GameLoop uut = new GameLoop(testGame);
 
 		uut.run();
 
 		assertTrue(testGame.isUpdated);
 	}
+	
+	@Test
+	void invokesUpdateAsLongAsGameIsRunnig() {
+		TestGame testGame = new TestGame();
+		testGame.setRunning(true, true, true, false);
+		GameLoop uut = new GameLoop(testGame);
+
+		uut.run();
+		
+		assertThat(testGame.numberOfUpdates, is(3));
+	}
 
 	public static class TestGame implements Game {
 
+		public int numberOfUpdates;
 		public boolean isUpdated;
-		private boolean running;
+		private Queue<Boolean> running;
 
-		public void setRunning(boolean running) {
-			this.running = running;
+		public void setRunning(Boolean... runningValues) {
+			List<Boolean> values = Arrays.asList(runningValues);
+			this.running = new LinkedList<Boolean>(values);;
 		}
 
 		public void update() {
 			isUpdated = true;
-
+			numberOfUpdates++;
 		}
 
 		public boolean isRunning() {
-			return running;
+			return running.poll();
 		}
 
 	}

@@ -9,7 +9,7 @@ public class GameLoop {
 	}
 
 	public void run() {
-		if (game.isRunning())
+		while (game.isRunning())
 			game.update();
 
 	}
