@@ -5,4 +5,8 @@ public interface Game {
 
 	boolean isRunning();
 
+	void render();
+
+
+
 }

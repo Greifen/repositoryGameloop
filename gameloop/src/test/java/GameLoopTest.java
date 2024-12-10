@@ -57,9 +57,17 @@ class GameLoopTest {
 		uut.run();
 		assertThat(testGame.numberOfUpdates, is(3));
 	}
+	
+	@Test
+	void invokesRenderAfterUpdate() {
+		testGame.setRunning(true, false);
+		uut.run();
+		assertThat(testGame.numberOfRenders, is(1));
+	}
 
 	public static class TestGame implements Game {
 
+		public int numberOfRenders;
 		public int numberOfUpdates;
 		public boolean isUpdated;
 		private Queue<Boolean> running;
@@ -76,6 +84,12 @@ class GameLoopTest {
 
 		public boolean isRunning() {
 			return running.poll();
+		}
+
+
+		public void render() {
+			numberOfRenders++;
+			
 		}
 
 	}
