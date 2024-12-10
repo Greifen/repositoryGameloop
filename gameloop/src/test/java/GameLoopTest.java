@@ -41,14 +41,14 @@ class GameLoopTest {
 	void doesNothingIfGameIsNotRunning() {
 		testGame.setRunning(false);
 		uut.run();
-		assertFalse(testGame.isUpdated); 
+		assertThat(testGame.numberOfUpdates, is(0));
 	}
 
 	@Test
 	void invokesOneUpdateIfGameIsRunning() {
 		testGame.setRunning(true,false);
 		uut.run();
-		assertTrue(testGame.isUpdated);
+		assertThat(testGame.numberOfUpdates, is(1));
 	}
 	
 	@Test
@@ -69,7 +69,6 @@ class GameLoopTest {
 
 		public int numberOfRenders;
 		public int numberOfUpdates;
-		public boolean isUpdated;
 		private Queue<Boolean> running;
 
 		public void setRunning(Boolean... runningValues) {
@@ -78,7 +77,6 @@ class GameLoopTest {
 		}
 
 		public void update() {
-			isUpdated = true;
 			numberOfUpdates++;
 		}
 
