@@ -88,7 +88,11 @@ class GameLoopTest {
 
 
 		public void render() {
+			if(numberOfRenders!=numberOfUpdates-1) 
+				throw new RenderBeforeUpdateException();
 			numberOfRenders++;
+			
+			
 			
 		}
 

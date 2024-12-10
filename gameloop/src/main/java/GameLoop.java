@@ -10,8 +10,11 @@ public class GameLoop {
 
 	public void run() {
 		while (game.isRunning())
+		{
 			game.update();
 			game.render();
+
+		}
 
 	}
 
