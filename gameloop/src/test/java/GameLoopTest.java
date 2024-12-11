@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Arrays;
 
-import org.junit.Before;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -17,25 +17,17 @@ import org.junit.jupiter.api.Test;
 class GameLoopTest {
 
 	private TestGame testGame;
+	private TestInputHandler testInputHandler;
 	private GameLoop uut;
 
-	@BeforeAll
-	static void setUpBeforeClass() throws Exception {
-	}
-
-	@AfterAll
-	static void tearDownAfterClass() throws Exception {
-	}
 
 	@BeforeEach
 	public void setUpGameLoop() throws Exception {
 		testGame = new TestGame();
-		uut = new GameLoop(testGame);
+		testInputHandler = new TestInputHandler();
+		uut = new GameLoop(testGame, testInputHandler);
 	}
 
-	@AfterEach
-	void tearDown() throws Exception {
-	}
 
 	@Test
 	void doesNothingIfGameIsNotRunning() {
@@ -65,8 +57,37 @@ class GameLoopTest {
 		assertThat(testGame.numberOfRenders, is(1));
 	}
 
-	public static class TestGame implements Game {
+	@Test
+	void passesInputToUpdate() {
+		TestInput testInput = new TestInput();
+		testInputHandler.setInput(testInput);
+		testGame.setRunning(true,false);
+		uut.run();
+		assertThat(testGame.updatedWithInput, is(testInput));
+	}
+	
+	public static class TestInput{
+		
+	}
+	
+	public static class TestInputHandler implements InputHandler<TestInput> {
+		private GameLoopTest.TestInput testInput;
 
+		public void setInput(TestInput testInput) {
+			this.testInput = testInput;
+			
+		}
+		
+		@Override
+		public GameLoopTest.TestInput getCurrentInput() {
+			return testInput;
+		}
+
+	}
+	
+	public static class TestGame implements Game<TestInput> {
+
+		public TestInput updatedWithInput;
 		public int numberOfRenders;
 		public int numberOfUpdates;
 		private Queue<Boolean> running;
@@ -76,8 +97,9 @@ class GameLoopTest {
 			this.running = new LinkedList<Boolean>(values);;
 		}
 
-		public void update() {
+		public void update(TestInput input) {
 			numberOfUpdates++;
+			updatedWithInput = input;
 		}
 
 		public boolean isRunning() {
@@ -89,9 +111,6 @@ class GameLoopTest {
 			if(numberOfRenders!=numberOfUpdates-1) 
 				throw new RenderBeforeUpdateException();
 			numberOfRenders++;
-			
-			
-			
 		}
 
 	}

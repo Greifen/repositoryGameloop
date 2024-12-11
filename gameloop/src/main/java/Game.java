@@ -1,11 +1,11 @@
 
-public interface Game {
+public interface Game<I> {
 
-	void update();
+	public abstract void update(I input);
 
-	boolean isRunning();
+	public abstract boolean isRunning();
 
-	void render();
+	public abstract void render();
 
 
 
