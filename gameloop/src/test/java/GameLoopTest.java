@@ -16,21 +16,21 @@ import org.junit.jupiter.api.Test;
 
 class GameLoopTest {
 
-	private TestGame testGame;
-	private TestInputHandler testInputHandler;
-	private GameLoop uut;
+
 
 
 	@BeforeEach
 	public void setUpGameLoop() throws Exception {
-		testGame = new TestGame();
-		testInputHandler = new TestInputHandler();
-		uut = new GameLoop(testGame, testInputHandler);
+
 	}
 
 
 	@Test
 	void doesNothingIfGameIsNotRunning() {
+		TestGame testGame = new TestGame();
+		TestInputHandler testInputHandler = new TestInputHandler();
+		GameLoop uut = new GameLoop(testGame, testInputHandler);
+		
 		testGame.setRunning(false);
 		uut.run();
 		assertThat(testGame.numberOfUpdates, is(0));
@@ -38,6 +38,10 @@ class GameLoopTest {
 
 	@Test
 	void invokesOneUpdateIfGameIsRunning() {
+		TestGame testGame = new TestGame();
+		TestInputHandler testInputHandler = new TestInputHandler();
+		GameLoop uut = new GameLoop(testGame, testInputHandler);
+		
 		testGame.setRunning(true,false);
 		uut.run();
 		assertThat(testGame.numberOfUpdates, is(1));
@@ -45,6 +49,10 @@ class GameLoopTest {
 	
 	@Test
 	void invokesUpdateAsLongAsGameIsRunnig() {
+		TestGame testGame = new TestGame();
+		TestInputHandler testInputHandler = new TestInputHandler();
+		GameLoop uut = new GameLoop(testGame, testInputHandler);
+		
 		testGame.setRunning(true, true, true, false);
 		uut.run();
 		assertThat(testGame.numberOfUpdates, is(3));
@@ -52,6 +60,16 @@ class GameLoopTest {
 	
 	@Test
 	void invokesRenderAfterUpdate() {
+		TestGame testGame = new TestGame() {
+			@Override
+			public void render() {
+				assertEquals(numberOfRenders, numberOfUpdates-1);
+				super.render();
+			}
+		};
+		TestInputHandler testInputHandler = new TestInputHandler();
+		GameLoop uut = new GameLoop(testGame, testInputHandler);
+		
 		testGame.setRunning(true, false);
 		uut.run();
 		assertThat(testGame.numberOfRenders, is(1));
@@ -59,6 +77,10 @@ class GameLoopTest {
 
 	@Test
 	void passesInputToUpdate() {
+		TestGame testGame = new TestGame();
+		TestInputHandler testInputHandler = new TestInputHandler();
+		GameLoop uut = new GameLoop(testGame, testInputHandler);
+		
 		TestInput testInput = new TestInput();
 		testInputHandler.setInput(testInput);
 		testGame.setRunning(true,false);
@@ -108,8 +130,7 @@ class GameLoopTest {
 
 
 		public void render() {
-			if(numberOfRenders!=numberOfUpdates-1) 
-				throw new RenderBeforeUpdateException();
+
 			numberOfRenders++;
 		}
 
