@@ -29,7 +29,9 @@ class GameLoopTest {
 	void doesNothingIfGameIsNotRunning() {
 		TestGame testGame = new TestGame();
 		TestInputHandler testInputHandler = new TestInputHandler();
-		GameLoop uut = new GameLoop(testGame, testInputHandler);
+
+		TestTimer testTimer= new TestTimer();
+		GameLoop<TestInput> uut = new GameLoop<TestInput>(testGame, testInputHandler, testTimer);
 		
 		testGame.setRunning(false);
 		uut.run();
@@ -40,7 +42,9 @@ class GameLoopTest {
 	void invokesOneUpdateIfGameIsRunning() {
 		TestGame testGame = new TestGame();
 		TestInputHandler testInputHandler = new TestInputHandler();
-		GameLoop uut = new GameLoop(testGame, testInputHandler);
+
+		TestTimer testTimer= new TestTimer();
+		GameLoop<TestInput> uut = new GameLoop<TestInput>(testGame, testInputHandler, testTimer);
 		
 		testGame.setRunning(true,false);
 		uut.run();
@@ -51,7 +55,9 @@ class GameLoopTest {
 	void invokesUpdateAsLongAsGameIsRunnig() {
 		TestGame testGame = new TestGame();
 		TestInputHandler testInputHandler = new TestInputHandler();
-		GameLoop uut = new GameLoop(testGame, testInputHandler);
+
+		TestTimer testTimer= new TestTimer();
+		GameLoop<TestInput> uut = new GameLoop<TestInput>(testGame, testInputHandler, testTimer);
 		
 		testGame.setRunning(true, true, true, false);
 		uut.run();
@@ -68,7 +74,9 @@ class GameLoopTest {
 			}
 		};
 		TestInputHandler testInputHandler = new TestInputHandler();
-		GameLoop uut = new GameLoop(testGame, testInputHandler);
+
+		TestTimer testTimer= new TestTimer();
+		GameLoop<TestInput> uut = new GameLoop<TestInput>(testGame, testInputHandler, testTimer);
 		
 		testGame.setRunning(true, false);
 		uut.run();
@@ -79,13 +87,52 @@ class GameLoopTest {
 	void passesInputToUpdate() {
 		TestGame testGame = new TestGame();
 		TestInputHandler testInputHandler = new TestInputHandler();
-		GameLoop uut = new GameLoop(testGame, testInputHandler);
+
+		TestTimer testTimer= new TestTimer();
+		GameLoop<TestInput> uut = new GameLoop<TestInput>(testGame, testInputHandler, testTimer);
 		
 		TestInput testInput = new TestInput();
 		testInputHandler.setInput(testInput);
 		testGame.setRunning(true,false);
 		uut.run();
 		assertThat(testGame.updatedWithInput, is(testInput));
+	}
+	
+	@Test
+	void shouldSkipUpdateIfLoopIsTooFast() {
+		TestGame testGame = new TestGame();
+		TestInputHandler testInputHandler = new TestInputHandler();
+		
+		TestTimer testTimer= new TestTimer();
+		testTimer.setTimes(0,1);
+		GameLoop<TestInput> uut = new GameLoop<TestInput>(testGame, testInputHandler, testTimer);	
+		
+//		TestInput testInput = new TestInput();
+//		testInputHandler.setInput(testInput);
+		testGame.setRunning(true,false);
+		uut.run();
+		assertThat(testGame.numberOfUpdates, is(0));
+		assertThat(testGame.numberOfRenders, is(1));
+	}
+	
+	public static class TestTimer implements Timer{
+
+		private LinkedList<Integer> times;
+		
+		public TestTimer() {
+			setTimes(0,GameLoop.FRAME_DURATION,2*GameLoop.FRAME_DURATION,3*GameLoop.FRAME_DURATION,4*GameLoop.FRAME_DURATION);
+		}
+
+		public void setTimes(Integer... times) {
+			List<Integer> values = Arrays.asList(times);
+			this.times = new LinkedList<Integer>(values);
+		}
+		
+		@Override
+		public int getCurrentTime() {
+			return times.poll();
+		}
+		
 	}
 	
 	public static class TestInput{
