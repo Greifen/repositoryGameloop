@@ -15,15 +15,15 @@ public class GameLoop<I> {
 
 	public void run() {
 		int previousTime = timer.getCurrentTime();
-		while (game.isRunning())
-		{
+		while (game.isRunning()) {
 			int currentTime = timer.getCurrentTime();
-			int lag = currentTime-previousTime;
-			if(lag>=FRAME_DURATION) {
+
+			for (int lag = currentTime - previousTime; lag >= FRAME_DURATION; lag -= FRAME_DURATION) {
 				game.update(inputHandler.getCurrentInput());
+
 			}
 			game.render();
-
+			previousTime = currentTime;
 		}
 
 	}

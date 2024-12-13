@@ -115,6 +115,24 @@ class GameLoopTest {
 		assertThat(testGame.numberOfRenders, is(1));
 	}
 	
+	@Test
+	void doesAdditionalUpdateIfLoopIsTooSlow() {
+		TestGame testGame = new TestGame();
+		TestInputHandler testInputHandler = new TestInputHandler();
+		
+		TestTimer testTimer= new TestTimer();
+		testTimer.setTimes(0,2*GameLoop.FRAME_DURATION+1);
+		GameLoop<TestInput> uut = new GameLoop<TestInput>(testGame, testInputHandler, testTimer);	
+		
+//		TestInput testInput = new TestInput();
+//		testInputHandler.setInput(testInput);
+		testGame.setRunning(true,false);
+		uut.run();
+		assertThat(testGame.numberOfUpdates, is(2));
+		assertThat(testGame.numberOfRenders, is(1));
+	}
+	
+	
 	public static class TestTimer implements Timer{
 
 		private LinkedList<Integer> times;
