@@ -21,25 +21,35 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-
+@ExtendWith(MockitoExtension.class)
 class GameLoopTest {
 
-
+	@Mock
 	private Game<TestInput> testGame;
+	
+	@Mock
 	private InputHandler<TestInput> testInputHandler;
+	
+	@Mock
 	private Timer testTimer;
+	private int time;
+	
+	@InjectMocks
 	private GameLoop<TestInput> uut;
 
 	@BeforeEach
-	@SuppressWarnings("unchecked")
 	public void setUp() throws Exception {
-		testGame = mock(Game.class);
-		testInputHandler = mock(InputHandler.class);
-		testTimer = mock(Timer.class);
-		when(testTimer.getCurrentTime()).thenReturn(0,GameLoop.FRAME_DURATION, 2*GameLoop.FRAME_DURATION, 3*GameLoop.FRAME_DURATION);
-		uut = new GameLoop<TestInput>(testGame, testInputHandler, testTimer);
-
+		time=0;
+		when(testTimer.getCurrentTime()).then(i->{
+			int oldTime=time;
+			time+=GameLoop.FRAME_DURATION;
+			return oldTime;
+		});
 	}
 
 
