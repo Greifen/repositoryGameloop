@@ -126,6 +126,17 @@ class GameLoopTest {
 		verify(testGame, times(1)).render();
 	}
 
+	@Test
+	public void doesExecuteUpdateEventually() {
+		when(testGame.isRunning()).thenReturn(true,true,true,false);
+		int halfFrameDuration = (int)(GameLoop.FRAME_DURATION/2);
+        when(testTimer.getCurrentTime()).thenReturn(0,halfFrameDuration,2*halfFrameDuration,3*halfFrameDuration);
+        
+        uut.run();
+		
+		verify(testGame, times(1)).update(any());
+	}
+	
 	public static class TestInput {
 
 	}

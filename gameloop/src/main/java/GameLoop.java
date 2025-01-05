@@ -1,7 +1,7 @@
 
 public class GameLoop<I> {
 
-	public static final int FRAME_DURATION = 16;
+	public static final int FRAME_DURATION = 1000 / 60;
 	private Game<I> game;
 	private InputHandler<I> inputHandler;
 	private Timer timer;
@@ -15,12 +15,12 @@ public class GameLoop<I> {
 
 	public void run() {
 		int previousTime = timer.getCurrentTime();
+		int lag = 0;
 		while (game.isRunning()) {
 			int currentTime = timer.getCurrentTime();
-
-			for (int lag = currentTime - previousTime; lag >= FRAME_DURATION; lag -= FRAME_DURATION) {
+			lag += currentTime - previousTime;
+			for (; lag >= FRAME_DURATION; lag -= FRAME_DURATION) {
 				game.update(inputHandler.getCurrentInput());
-
 			}
 			game.render();
 			previousTime = currentTime;
