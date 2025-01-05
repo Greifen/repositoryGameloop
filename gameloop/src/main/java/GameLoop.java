@@ -25,7 +25,5 @@ public class GameLoop<I> {
 			game.render();
 			previousTime = currentTime;
 		}
-
 	}
-
 }
