@@ -1,3 +1,4 @@
+package gameloop;
 
 public interface Game<I> {
 
